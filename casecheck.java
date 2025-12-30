@@ -14,7 +14,7 @@ public class casecheck {
             System.out.println("The first letter is lower  case.");
         }
         else{
-            System.out.println("The first letter is Upper case."); 
+            System.out.println("The first letter is Upper case.");
         }
 
     }
