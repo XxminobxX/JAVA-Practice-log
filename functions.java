@@ -2,7 +2,7 @@
 
 import java.util.Scanner;
 
-public class practice {
+public class functions {
  
   
       public static void greeting(String name){
