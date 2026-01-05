@@ -56,7 +56,7 @@ public class rock {
 
             if(user == 9 ){
                 System.out.println("Exited....");
-                break;
+                 break;
             }
 
             //Generating user and comp ASCII art and result.
