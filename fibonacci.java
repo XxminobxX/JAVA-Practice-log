@@ -2,9 +2,9 @@ import java.util.Scanner;
 
 public class fibonacci {
 
-    public static void main(String[] args) {
+     public static void main(String[] args) {
         // Creating a simple program to print fibonacci series.
-        System.out.println("Hello Welcome to the Fibonacci series program. \nEnter the number to print the series N number of times.");
+        System.out.println( "Hello Welcome to the Fibonacci series program. \nEnter the number to print the series N number of times.");
         Scanner sc = new Scanner(System.in); 
          int user = sc.nextInt();
 

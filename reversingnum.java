@@ -3,8 +3,8 @@
 import java.util.Scanner;
 
 public class reversingnum {
-    public static void main(String[] args) {
-
+    public static void main(String[] args) { 
+ 
         System.out.print("Enter the number you want to reverse: ");
         Scanner sc = new Scanner(System.in);
         int user = sc.nextInt();

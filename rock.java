@@ -43,11 +43,11 @@ public class rock {
 
             // Entering about user choice.
             int user;
-            try {
+             try { 
                 user = sc.nextInt();
             } catch (Exception e) {
                 System.out.println("Invalid input! Please enter numbers only.\n\n");
-                continue;
+                continue; 
             }
 
             // To generate Radom computer choice.
