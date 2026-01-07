@@ -1,5 +1,5 @@
 // Write a program to print a personalised greeting message
-
+ 
 import java.util.Scanner;
  
 public class functions {

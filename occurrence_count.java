@@ -2,7 +2,7 @@
 
 import java.util.Scanner;
 
-public class occurrence_count{
+public class occurrence_count{ 
     public static void main(String[] args) {
 
         System.out.print("Enter a long number:"); 
