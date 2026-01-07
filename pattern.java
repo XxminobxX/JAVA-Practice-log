@@ -8,6 +8,9 @@ public class pattern {
 
        for(int i=0;i<b;i++){
         System.out.println("");
+        for(int j=0;j<b;j++){
+            System.out.print("*");
+        }
        }
 
     }
