@@ -11,7 +11,7 @@ public class pattern {
         System.out.print("Enter the amount  of stars you want to print(box star pattern)(a*a form): ");
         int user = sc.nextInt();
        
-
+ 
        for(int i=0;i<=user;i++){
         System.out.println("");
         for(int j=0;j<=user;j++){
