@@ -5,7 +5,7 @@ public class calculator {
 
         Scanner sc = new Scanner(System.in);
 
-        while (true) {
+        while (true) { 
 
             System.out.print("Enter operator (+, -, *, /, %, x to exit): ");
             char op = sc.next().trim().charAt(0);
