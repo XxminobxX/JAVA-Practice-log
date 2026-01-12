@@ -6,7 +6,7 @@ public class pattern {
     public static void main(String[] args) {
         Scanner sc =new Scanner(System.in);
        while (true) { 
-        
+         
        System.out.println("\n");
         System.out.print("Enter the amount  of stars you want to print(box star pattern)(a*a form): ");
         int user = sc.nextInt();
