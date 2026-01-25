@@ -1,7 +1,7 @@
  
 import java.util.Scanner;
  
-public class casecheck {      
+public class casecheck {       
      public static void main(String[] args) {
 
     // Creating a simple code to check whether the first letter of given word is uppercase or lowercase.
