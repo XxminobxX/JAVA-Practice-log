@@ -40,7 +40,7 @@ public class rock {
             System.out.println("It's YOU VS COMPUTER.");
             System.out.println(" Rock --> 0 \n Paper --> 1 \n Scissor --> 2 \n EXIT --> 9");
             System.out.print("Enter your choice: ");
-
+  
             // Entering about user choice.
             int user;
         try {   

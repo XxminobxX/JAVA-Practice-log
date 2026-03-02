@@ -1,7 +1,7 @@
 //Creating a program that check the occurrence of a particular number from a user.
 
 import java.util.Scanner;
- 
+  
 public class occurrence_count{   
     public static void main(String[] args) {
 
