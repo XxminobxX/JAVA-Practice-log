@@ -1,17 +1,9 @@
-class car{
-        String paint;
-        int weight;
+/*class student{
+    String name;
+    int age;
 
+    student(String name,int age){
+        this.name = name;
+        this.age = age;
     }
-public class p1{
-    
-    public static void main(String[] args) {
-        car c1 = new car();
-        c1.paint = "red";
-        System.out.println(c1);
-    
-}
- }    
-
-
-        
+ }*/
