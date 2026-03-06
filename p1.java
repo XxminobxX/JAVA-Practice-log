@@ -7,3 +7,6 @@
         this.age = age;
     }
  }*/
+
+    // P1 and P2 are of  same package
+

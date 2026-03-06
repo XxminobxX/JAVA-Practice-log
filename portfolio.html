@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hardil Shukla — Mario Portfolio 🎮</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;overflow:hidden;height:100vh;width:100vw;font-family:'Press Start 2P',monospace}
+#gameCanvas{display:block;image-rendering:pixelated}
+
+/* ── MODAL ── */
+#modalOverlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;
+  display:none;align-items:center;justify-content:center;
+}
+#modalOverlay.show{display:flex}
+#modal{
+  background:#1a1a2e;border:4px solid #fff;
+  max-width:640px;width:90vw;max-height:85vh;overflow-y:auto;
+  padding:0;position:relative;
+  box-shadow:8px 8px 0 #000,0 0 40px rgba(255,200,0,.3);
+  animation:popIn .18s ease;
+}
+@keyframes popIn{from{transform:scale(.7)}to{transform:scale(1)}}
+#modalHeader{
+  background:var(--hcol,#e52);
+  padding:16px 20px 12px;
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:4px solid #000;
+  position:sticky;top:0;z-index:10;
+}
+#modalHeader h2{color:#fff;font-size:12px;text-shadow:2px 2px #000;line-height:1.5}
+#modalClose{
+  background:#000;color:#fff;border:3px solid #fff;
+  font-family:'Press Start 2P',monospace;font-size:10px;
+  padding:6px 10px;cursor:pointer;line-height:1;
+}
+#modalClose:hover{background:#e52}
+#modalBody{padding:20px;color:#eee;font-size:9px;line-height:2}
+#modalBody h3{color:#ffd700;font-size:10px;margin:14px 0 8px;border-bottom:2px solid #333;padding-bottom:6px}
+#modalBody p{margin-bottom:10px;color:#ccc}
+#modalBody a{color:#58f;text-decoration:none;display:inline-block;margin:4px 0}
+#modalBody a:hover{color:#ffd700}
+.tag{display:inline-block;background:#333;color:#adf;border:1px solid #58f;
+  padding:2px 7px;margin:3px;font-size:7px;border-radius:2px}
+.project-card{background:#0d0d1a;border:2px solid #333;padding:12px;margin:10px 0;border-left:4px solid var(--hcol,#0f0)}
+.project-card h4{color:#ffd700;font-size:9px;margin-bottom:8px}
+.btn{display:inline-block;background:var(--hcol,#e52);color:#fff;
+  border:3px solid #fff;padding:8px 14px;font-family:'Press Start 2P',monospace;
+  font-size:8px;cursor:pointer;margin:6px 4px;text-decoration:none}
+.btn:hover{background:#ffd700;color:#000}
+
+/* ── HUD ── */
+#hud{
+  position:fixed;top:0;left:0;right:0;height:44px;
+  background:rgba(0,0,0,.85);border-bottom:3px solid #333;
+  display:flex;align-items:center;justify-content:space-around;
+  color:#fff;font-size:9px;z-index:200;
+  text-shadow:1px 1px #000;
+}
+.hud-item span{color:#ffd700}
+
+/* ── TOUCH CONTROLS ── */
+#touchControls{
+  position:fixed;bottom:0;left:0;right:0;height:80px;
+  display:none;justify-content:space-between;align-items:center;
+  padding:0 20px;z-index:200;background:rgba(0,0,0,.4);
+  border-top:2px solid #333;
+}
+#touchControls button{
+  background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.4);
+  color:#fff;font-family:'Press Start 2P',monospace;font-size:12px;
+  width:60px;height:54px;cursor:pointer;border-radius:6px;
+}
+#touchControls button:active{background:rgba(255,255,255,.35)}
+.dpad{display:flex;gap:6px}
+
+/* ── MUSIC BTN ── */
+#musicBtn{
+  position:fixed;top:50px;right:12px;z-index:201;
+  background:#000;border:3px solid #fff;color:#fff;
+  font-family:'Press Start 2P',monospace;font-size:8px;
+  padding:6px 10px;cursor:pointer;
+}
+#musicBtn:hover{background:#333}
+
+/* ── GUIDE ── */
+#guide{
+  position:fixed;bottom:84px;left:50%;transform:translateX(-50%);
+  color:rgba(255,255,255,.7);font-size:7px;text-align:center;
+  line-height:2;pointer-events:none;z-index:100;white-space:nowrap;
+}
+</style>
+</head>
+<body>
+
+<div id="hud">
+  <div class="hud-item">HARDIL<br><span id="hudScore">000000</span></div>
+  <div class="hud-item">🪙 COINS<br><span id="hudCoins">00</span></div>
+  <div class="hud-item">WORLD<br><span>1-1</span></div>
+  <div class="hud-item">LIVES<br><span id="hudLives">♥♥♥</span></div>
+  <div class="hud-item">TIME<br><span id="hudTime">400</span></div>
+</div>
+
+<canvas id="gameCanvas"></canvas>
+
+<button id="musicBtn" onclick="toggleMusic()">♪ ON</button>
+
+<div id="modalOverlay">
+  <div id="modal">
+    <div id="modalHeader">
+      <h2 id="modalTitle">Title</h2>
+      <button id="modalClose" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div id="splashScreen" style="position:fixed;inset:0;background:#000;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Press Start 2P',monospace;color:#fff;">
+  <div style="font-size:11px;color:#ffd700;margin-bottom:6px;letter-spacing:2px">WORLD 1-1</div>
+  <div style="font-size:28px;color:#e52222;text-shadow:4px 4px #000,0 0 30px #ff0;margin-bottom:8px">🍄 HARDIL</div>
+  <div style="font-size:20px;color:#fff;text-shadow:3px 3px #000;margin-bottom:4px">SHUKLA</div>
+  <div style="font-size:8px;color:#aaa;margin:12px 0 4px">Developer · Builder · Learner</div>
+  <div style="font-size:7px;color:#059669;margin-bottom:30px">Surat, Gujarat, India 🇮🇳</div>
+  <div style="border:3px solid #ffd700;padding:12px 24px;margin-bottom:10px;background:#111">
+    <div style="font-size:8px;color:#ffd700;text-align:center">× PRESS ANY KEY TO START ×</div>
+  </div>
+  <div style="font-size:7px;color:#666;margin-top:10px">© 2026 HARDIL.EXE</div>
+</div>
+
+<div id="touchControls">
+  <div class="dpad">
+    <button id="btnLeft">◀</button>
+    <button id="btnRight">▶</button>
+  </div>
+  <button id="btnJump">▲ JUMP</button>
+</div>
+
+<div id="guide">
+  ← → MOVE &nbsp;|&nbsp; SPACE/↑ JUMP &nbsp;|&nbsp; HIT BLOCKS &nbsp;|&nbsp; ENTER PIPES ↓
+</div>
+
+<script>
+// CONFIG
+const ME = {
+  name: "Hardil Shukla",
+  title: "Developer & Problem Solver",
+  tagline: "Building cool stuff 🚀",
+  bio: "Passionate developer pursuing B.Tech in IT. Always leveling up!",
+  skills: ["Java","HTML","CSS","JavaScript","Git","Spring Boot"],
+  email: "hardilshukla@email.com",
+  location: "Surat, India",
+  linkedin: "https://www.linkedin.com/in/hardil-shukla/",
+  github: "https://github.com/XxminobxX",
+  twitter: "https://twitter.com/hardilshukla",
+  portfolio: "https://github.com/XxminobxX",
+  resume: "https://www.linkedin.com/in/hardil-shukla/",
+};
+
+const PROJECTS = [
+  { name:"careLog", desc:"Healthcare logging app.", tech:["HTML","JS"], url:"#", color:"#e52222" },
+  { name:"DayFlow", desc:"Productivity app.", tech:["Odoo","JS"], url:"#", color:"#0077ff" },
+  { name:"Shiv Furniture", desc:"Furniture brand website.", tech:["HTML","CSS"], url:"#", color:"#8b5cf6" }
+];
+
+// AUDIO ENGINE
+let audioCtx = null, musicOn = true, bgmInterval = null;
+function getAudio(){ if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); return audioCtx; }
+function beep(f,d=0.1,t='square',v=0.15,del=0){
+  try{ const ac=getAudio(); const o=ac.createOscillator(),g=ac.createGain(); o.connect(g);g.connect(ac.destination);
+  o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,ac.currentTime+del); g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+del+d);
+  o.start(ac.currentTime+del); o.stop(ac.currentTime+del+d+0.01); }catch(e){}
+}
+function playJump(){beep(523,.06);beep(659,.06,'square',.15,.07);}
+function playCoin(){beep(988,.05,'sine',.2);beep(1319,.12,'sine',.2,.05);}
+function playHit(){beep(392,.08);beep(330,.1,'square',.15,.05);}
+
+const bgm = [[659,2],[659,2],[0,2],[659,2],[0,2],[523,2],[659,2],[0,2],[784,4],[0,4],[392,4],[0,4]];
+let bgmIdx=0;
+function startBGM(){
+  if(bgmInterval) return;
+  const next = () => {
+    if(!musicOn){bgmInterval=null;return;}
+    const [f,b]=bgm[bgmIdx%bgm.length]; if(f>0) beep(f,b*0.08,'square',0.08);
+    bgmIdx++; bgmInterval=setTimeout(next,b*90);
+  }; next();
+}
+function toggleMusic(){ 
+  musicOn=!musicOn; document.getElementById('musicBtn').textContent='♪ '+(musicOn?'ON':'OFF');
+  if(musicOn){try{getAudio().resume();}catch(e){}startBGM();} else {clearTimeout(bgmInterval); bgmInterval=null;}
+}
+
+// CANVAS & WORLD
+const canvas=document.getElementById('gameCanvas');
+const ctx=canvas.getContext('2d');
+let W,H,GY, cameraX=0, modalOpen=false;
+let blocks=[], pipes=[], coins3d=[], enemies=[], particles=[], floatingTexts=[];
+let score=0, coinCount=0, lives=3, gameTime=400, timeTimer=0;
+const WORLD_W = 5200;
+
+const mario={ x:80, y:0, vx:0, vy:0, w:36, h:44, onGround:false, facingRight:true, frameT:0, invincible:0 };
+
+function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; GY=H-80; initWorld(); }
+
+function initWorld(){
+  blocks=[]; pipes=[]; enemies=[]; coins3d=[];
+  const socials=[
+    {label:'LinkedIn',icon:'in',color:'#0077b5',type:'social',url:ME.linkedin,mx:400,my:GY-200},
+    {label:'GitHub',icon:'GH',color:'#24292e',type:'social',url:ME.github,mx:600,my:GY-200},
+    {label:'Resume',icon:'📄',color:'#b8860b',type:'resume',mx:800,my:GY-200},
+    {label:'About',icon:'?',color:'#e52222',type:'about',mx:1000,my:GY-200}
+  ];
+  socials.forEach(b=>{blocks.push({...b,x:b.mx,y:b.my,w:56,h:56,hit:false,bumpT:0,visible:true})});
+  PROJECTS.forEach((p,i)=>{ pipes.push({ x:1400+i*400, y:GY, w:80, h:100, project:p, label:p.name, color:p.color }); });
+  [700,1200,1800,2500].forEach(ex=>{ enemies.push({x:ex,y:GY-36,vx:-1.5,w:36,h:36,alive:true,deathTimer:0}); });
+  mario.y=GY-mario.h;
+}
+
+// INPUTS & START
+const keys={};
+function hideSplash(){
+  document.getElementById('splashScreen').style.display='none';
+  if(musicOn){try{getAudio().resume();startBGM();}catch(e){}}
+}
+
+document.addEventListener('keydown',e=>{
+  hideSplash();
+  keys[e.code]=true;
+  if((e.code==='Space'||e.code==='ArrowUp')&&mario.onGround&&!modalOpen){ mario.vy=-16.5; mario.onGround=false; playJump(); }
+  if(e.code==='ArrowDown'&&!modalOpen){
+    pipes.forEach(p=>{
+      if(Math.abs((mario.x+mario.w/2)-(p.x+p.w/2))<40 && Math.abs((mario.y+mario.h)-p.y)<20){
+        openModal(p.project.name, `<p>${p.project.desc}</p><a class='btn' href='${p.project.url}' target='_blank'>View Project</a>`, p.color);
+      }
+    });
+  }
+});
+document.addEventListener('keyup',e=>keys[e.code]=false);
+document.addEventListener('click', hideSplash);
+
+function openModal(title,html,color='#e52222'){
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalBody').innerHTML=html;
+  document.getElementById('modal').style.setProperty('--hcol',color);
+  document.getElementById('modalOverlay').classList.add('show');
+  modalOpen=true;
+}
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('show'); modalOpen=false; }
+
+// GAME LOOP
+function update(){
+  if(modalOpen)return;
+  const spd=5;
+  if(keys['ArrowLeft']||keys['KeyA']){mario.vx=-spd; mario.facingRight=false;}
+  else if(keys['ArrowRight']||keys['KeyD']){mario.vx=spd; mario.facingRight=true;}
+  else mario.vx*=0.8;
+
+  mario.vy+=0.8; mario.x+=mario.vx; mario.y+=mario.vy;
+  if(mario.y+mario.h>=GY){ mario.y=GY-mario.h; mario.vy=0; mario.onGround=true; }
+  mario.x=Math.max(0, Math.min(WORLD_W-mario.w, mario.x));
+  cameraX=Math.max(0, Math.min(WORLD_W-W, mario.x-W/3));
+
+  blocks.forEach(b=>{
+    if(mario.vy<0 && mario.x+mario.w>b.x && mario.x<b.x+b.w && mario.y<b.y+b.h && mario.y>b.y){
+      mario.vy=2; b.bumpT=10; if(!b.hit){
+        b.hit=true; playCoin(); score+=100;
+        if(b.type==='social') window.open(b.url,'_blank');
+        if(b.type==='about') openModal("About Me", `<p>${ME.bio}</p>`, b.color);
+        if(b.type==='resume') openModal("Resume", `<p>Pursuing B.Tech IT</p><a class='btn' href='${ME.resume}' target='_blank'>View PDF</a>`, b.color);
+      }
+    }
+  });
+
+  enemies.forEach(e=>{
+    if(!e.alive)return; e.x+=e.vx; if(e.x<0||e.x>WORLD_W)e.vx*=-1;
+    if(mario.x+mario.w>e.x && mario.x<e.x+e.w && mario.y+mario.h>e.y && mario.y<e.y+e.h){
+      if(mario.vy>0){ e.alive=false; mario.vy=-10; playHit(); score+=200; }
+      else { lives--; mario.x=80; playHit(); }
+    }
+  });
+  updateHUD();
+}
+
+function updateHUD(){
+  document.getElementById('hudScore').textContent=String(score).padStart(6,'0');
+  document.getElementById('hudLives').textContent='♥'.repeat(Math.max(0,lives));
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#5c94fc'; ctx.fillRect(0,0,W,GY);
+  ctx.fillStyle='#70483c'; ctx.fillRect(0,GY,W,H-GY);
+
+  ctx.save(); ctx.translate(-cameraX,0);
+  blocks.forEach(b=>{ ctx.fillStyle=b.hit?'#888':b.color; ctx.fillRect(b.x,b.y,b.w,b.h); ctx.fillStyle='#fff'; ctx.fillText(b.icon, b.x+15, b.y+35); });
+  pipes.forEach(p=>{ ctx.fillStyle=p.color; ctx.fillRect(p.x,p.y-p.h,p.w,p.h); ctx.fillStyle='#fff'; ctx.fillText("V", p.x+30, p.y-p.h+30); });
+  enemies.forEach(e=>{ if(e.alive){ctx.fillStyle='#a52'; ctx.fillRect(e.x,e.y,e.w,e.h);} });
+  ctx.fillStyle='#e52'; ctx.fillRect(mario.x,mario.y,mario.w,mario.h);
+  ctx.restore();
+}
+
+function loop(){ update(); draw(); requestAnimationFrame(loop); }
+window.addEventListener('resize', resize);
+resize(); loop();
+</script>
+</body>
+</html>
